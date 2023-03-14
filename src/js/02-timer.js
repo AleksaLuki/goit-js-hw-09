@@ -2,12 +2,10 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { Report } from 'notiflix/build/notiflix-report-aio';
 
-
 const TIMER_DELAY = 1000;
 let intervalId = null;
 let selectedDate = null;
 let currentDate = null;
-
 
 const startBtn = document.querySelector('[data-start]');
 const dataDays = document.querySelector('[data-days]');
@@ -20,56 +18,55 @@ startBtn.disabled = true;
 startBtn.addEventListener('click', onStartCounter);
 
 const options = {
-      enableTime: true,
-      time_24hr: true,
-      defaultDate: new Date(),
-      minuteIncrement: 1,
-      onClose(selectedDates) {
-        if (selectedDates[0].getTime() < Date.now()) {
-          Report.failure('Please, choose a date in the future');
-          startBtn.disabled = true;
-        } else {
-          selectedDate = selectedDates[0].getTime();
-          startBtn.disabled = false;
-          Report.success('Click on start!');
-        //   console.log(selectedDates[0]);
-        }
-        selectedDay = selectedDates[0];
-      },
-    };
+  enableTime: true,
+  time_24hr: true,
+  defaultDate: new Date(),
+  minuteIncrement: 1,
+  onClose(selectedDates) {
+    if (selectedDates[0].getTime() < Date.now()) {
+      Report.failure('Please, choose a date in the future');
+      startBtn.disabled = true;
+    } else {
+      selectedDate = selectedDates[0].getTime();
+      startBtn.disabled = false;
+      Report.success('Click on start!');
+      //   console.log(selectedDates[0]);
+    }
+    selectedDay = selectedDates[0];
+  },
+};
 
-    const fp = flatpickr(fpInput, options);
+const fp = flatpickr(fpInput, options);
 
-
-    function onStartCounter() {
+function onStartCounter() {
   counter.start();
 }
 
 const counter = {
-      start() {
-        intervalId = setInterval(() => {
-          currentDate = Date.now();
-          const deltaTime = selectedDate - currentDate;
-          updateTimerface(convertMs(deltaTime));
-          startBtn.disabled = true;
-          fpInput.disabled = true;
-    
-          if (deltaTime <= 1000) {
-            this.stop();
-            Report.info('Timer stopped!');
-          }
-        }, TIMER_DELAY);
-      },
-    
-      stop() {
-        startBtn.disabled = true;
-        fpInput.disabled = false;
-        clearInterval(intervalId);
-        return;
-      },
-    };
+  start() {
+    intervalId = setInterval(() => {
+      currentDate = Date.now();
+      const deltaTime = selectedDate - currentDate;
+      updateTimerface(convertMs(deltaTime));
+      startBtn.disabled = true;
+      fpInput.disabled = true;
 
-    function updateTimerface({ days, hours, minutes, seconds }) {
+      if (deltaTime <= 1000) {
+        this.stop();
+        Report.info('Timer stopped!');
+      }
+    }, TIMER_DELAY);
+  },
+
+  stop() {
+    startBtn.disabled = true;
+    fpInput.disabled = false;
+    clearInterval(intervalId);
+    return;
+  },
+};
+
+function updateTimerface({ days, hours, minutes, seconds }) {
   dataDays.textContent = `${days}`;
   dataHours.textContent = `${hours}`;
   dataMinutes.textContent = `${minutes}`;
@@ -79,8 +76,6 @@ const counter = {
 function addLeadingZero(value) {
   return String(value).padStart(2, '0');
 }
-
-
 
 function convertMs(ms) {
   const second = 1000;
